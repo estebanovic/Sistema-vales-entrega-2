@@ -1,16 +1,49 @@
-# React + Vite
+# Sistema de Emisión y Control de Vales de Alimentación
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto es una aplicación web para la gestión automatizada de vales de alimentación de la empresa Libros Impresos S.A. Permite emitir, controlar y auditar vales para los funcionarios según sus turnos y servicios disponibles.
 
-Currently, two official plugins are available:
+## Características principales
+- Emisión de vales personalizados por turno y tipo de usuario.
+- Registro y control de vales generados y utilizados.
+- Definición y gestión de servicios de alimentación.
+- Interfaz moderna con React y Tailwind CSS.
+- Impresión de vales y generación de informes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Estructura del proyecto
+```
+src/
+  components/
+    Navbar.jsx
+    Footer.jsx
+  pages/
+    definirServicios.jsx
+    definirVales.jsx
+    generarInforme.jsx
+    home.jsx
+    imprimirVales.jsx
+    registrarVenta.jsx
+  assets/
+    images/
+      icon.png
+      logo.png
+App.jsx
+main.jsx
+index.css
+```
 
-## React Compiler
+## Instalación y uso
+1. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+2. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+3. Accede a la app en tu navegador en `http://localhost:5173` (o el puerto configurado).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Contexto
+La empresa cuenta con más de 500 funcionarios y opera en turnos para cubrir las 24 horas. El sistema automatiza la entrega y control de vales de alimentación, mejorando la gestión y la auditoría de los servicios prestados.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+Desarrollado para la asignatura de Desarrollo Web y Móvil.
