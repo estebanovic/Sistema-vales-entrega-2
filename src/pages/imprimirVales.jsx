@@ -8,7 +8,7 @@ function ImprimirVales() {
     const [observaciones, setObservaciones] = useState('');
 
     let currentTime = new Date();
-    currentTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    currentTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
     let tipoTurno = '';
     if (currentTime >= '06:00' && currentTime < '10:00') {
@@ -88,7 +88,7 @@ function ImprimirVales() {
     return (
         <div className="px-6 py-12">
             <div className="w-4xl mx-auto">
-                <h1 className='text-3xl font-bold text-brand-blue-700 mb-4'>Generar Vale de Alimentación</h1>
+                <h1 className='text-3xl font-bold text-brand-blue-700 mb-4'>Generar vale de alimentación</h1>
                 <div className="bg-white shadow-xl rounded-lg w-full p-6">
                     <h2 className='text-xl font-semibold text-brand-blue-700 mb-2'>Información del turno</h2>
                     <p><strong>Hora actual:</strong> {currentTime}</p>
@@ -204,7 +204,7 @@ function ImprimirVales() {
                     </thead>
                     <tbody>
                         {valesGenerados.map((vale) => (
-                            <tr key={vale.id} className="border-b">
+                            <tr key={vale.id} className="border-b hover:bg-gray-100">
                                 <td className="px-4 py-2 text-center">{vale.id}</td>
                                 <td className="px-4 py-2 text-center">{vale.tipoUsuario}</td>
                                 <td className="px-4 py-2 text-center">{vale.cantidad}</td>
