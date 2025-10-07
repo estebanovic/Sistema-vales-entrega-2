@@ -1,7 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-orange: #FF4527;
+  /* Escala para brand-orange (#FF4527) */
+  --color-brand-orange-50:  #FFEDE9;
+  --color-brand-orange-100: #FFC6C0;
+  --color-brand-orange-200: #FF9E96;
+  --color-brand-orange-300: #FF766B;
+  --color-brand-orange-400: #FF4E40;
+  --color-brand-orange-500: #FF4527; /* color base */
+  --color-brand-orange-600: #E03E20;
+  --color-brand-orange-700: #B63719;
+  --color-brand-orange-800: #8A2F12;
+  --color-brand-orange-900: #5C220A;
   /* Escala para brand-blue (#22244E) */
   --color-brand-blue-50:  #E9E9F3;
   --color-brand-blue-100: #C8C9E0;

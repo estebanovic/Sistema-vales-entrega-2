@@ -4,11 +4,11 @@ import React from 'react';
 
 export default function Home() {
   return (
-    <div className="bg-white px-6 py-12">
-      <div className="max-w-3xl mx-auto">
+    <div className="px-6 py-12">
+      <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-brand-blue-700 mb-4">Sistema de Emisión y Control de Vales de Alimentación</h1>
         <p className="text-lg text-gray-800 mb-6">
-          Bienvenido al sistema automatizado para la gestión de vales de alimentación de <span className="font-semibold">Libros Impresos S.A.</span>.<br/>
+          Bienvenido al sistema automatizado para la gestión de vales de alimentación de <span className="font-semibold">Ticketmeal S.A.</span>.<br/>
           Gestiona tus vales de desayuno, almuerzo, once y cena de manera rápida y segura, según tu turno y perfil.
         </p>
         <div className="mb-8">

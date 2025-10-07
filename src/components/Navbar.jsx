@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 
 const Navbar = () => (
@@ -7,25 +7,37 @@ const Navbar = () => (
             <img src={logo} alt="Logo" className="h-15 mr-4" />
             <span className="text-white text-2xl font-semibold">Sistema de Gestión Tickets de Alimentación</span>
         </div>
-        <nav className="bg-brand-orange p-4">
+        <nav className="bg-brand-orange-500 p-4">
             <ul className="flex space-x-4">
                 <li>
-                    <Link to="/" className="text-white hover:underline">Home</Link>
+                   <NavLink to="/" className={({ isActive }) =>
+                            `text-white hover:underline${isActive ? ' font-bold' : ''}`
+                        }>Home</NavLink>
                 </li>
                 <li>
-                    <Link to="/imprimir-vales" className="text-white hover:underline">Imprimir Vales</Link>
+                    <NavLink to="/imprimir-vales" className={({ isActive }) =>
+                            `text-white hover:underline${isActive ? ' font-bold' : ''}`
+                        }>Generar Vales</NavLink>
                 </li>
                 <li>
-                    <Link to="/definir-servicios" className="text-white hover:underline">Definir Servicios</Link>
+                    <NavLink to="/definir-servicios" className={({ isActive }) =>
+                            `text-white hover:underline${isActive ? ' font-bold' : ''}`
+                        }>Definir Servicios</NavLink>
                 </li>
                 <li>
-                    <Link to="/definir-vales" className="text-white hover:underline">Definir Vales</Link>
+                    <NavLink to="/definir-vales" className={({ isActive }) =>
+                            `text-white hover:underline${isActive ? ' font-bold' : ''}`
+                        }>Definir Vales</NavLink>
                 </li>
                 <li>
-                    <Link to="/generar-informe" className="text-white hover:underline">Generar Informe</Link>
+                    <NavLink to="/generar-informe" className={({ isActive }) =>
+                            `text-white hover:underline${isActive ? ' font-bold' : ''}`
+                        }>Generar Informe</NavLink>
                 </li>
                 <li>
-                    <Link to="/registrar-venta" className="text-white hover:underline">Registrar Venta</Link>
+                    <NavLink to="/registrar-venta" className={({ isActive }) =>
+                            `text-white hover:underline${isActive ? ' font-bold' : ''}`
+                        }>Registrar Venta</NavLink>
                 </li>
             </ul>
         </nav>

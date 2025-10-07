@@ -1,7 +1,7 @@
 export default function DefinirVales() {
     return (
-        <div>
-            definirVales
-        </div>
+    <div>
+        <h1>Definir Vales</h1>
+    </div>
     );
 }
