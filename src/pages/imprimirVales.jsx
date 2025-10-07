@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function ImprimirVales() {
     const [valesGenerados, setValesGenerados] = useState([]);
@@ -7,21 +7,22 @@ export default function ImprimirVales() {
     const [servicioAlimentacion, setServicioAlimentacion] = useState('');
     const [observaciones, setObservaciones] = useState('');
 
-    let currentTime = new Date();
-    currentTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const [currentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+    const [tipoTurno, setTipoTurno] = useState('');
 
-    let tipoTurno = '';
-    if (currentTime >= '06:00' && currentTime < '10:00') {
-        tipoTurno = 'Desayuno';
-    } else if (currentTime >= '12:00' && currentTime < '15:00') {
-        tipoTurno = 'Almuerzo';
-    } else if (currentTime >= '18:00' && currentTime < '20:00') {
-        tipoTurno = 'Once';
-    } else if (currentTime >= '20:00' && currentTime < '23:00') {
-        tipoTurno = 'Cena';
-    } else {
-        tipoTurno = 'Fuera de horario de vales';
-    }
+    useEffect(() => {
+        if (currentTime >= '06:00' && currentTime < '10:00') {
+            setTipoTurno('Desayuno');
+        } else if (currentTime >= '12:00' && currentTime < '15:00') {
+            setTipoTurno('Almuerzo');
+        } else if (currentTime >= '18:00' && currentTime < '20:00') {
+            setTipoTurno('Once');
+        } else if (currentTime >= '20:00' && currentTime < '23:00') {
+            setTipoTurno('Cena');
+        } else {
+            setTipoTurno('Fuera de horario de vales');
+        }
+    }, [currentTime]);
 
     const generateVale = (tipoUsuario, cantidad, servicioAlimentacion, observaciones) => {
         const nuevoVale = {
