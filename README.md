@@ -1,6 +1,6 @@
 # Sistema de Emisión y Control de Vales de Alimentación
 
-Este proyecto es una aplicación web para la gestión automatizada de vales de alimentación de la empresa Libros Impresos S.A. Permite emitir, controlar y auditar vales para los funcionarios según sus turnos y servicios disponibles.
+Este proyecto es una aplicación web para la gestión automatizada de vales de alimentación de la empresa Ticketmeal S.A. Permite emitir, controlar y auditar vales para los funcionarios según sus turnos y servicios disponibles.
 
 ## Características principales
 - Emisión de vales personalizados por turno y tipo de usuario.
@@ -41,9 +41,6 @@ index.css
    npm run dev
    ```
 3. Accede a la app en tu navegador en `http://localhost:5173` (o el puerto configurado).
-
-## Contexto
-La empresa cuenta con más de 500 funcionarios y opera en turnos para cubrir las 24 horas. El sistema automatiza la entrega y control de vales de alimentación, mejorando la gestión y la auditoría de los servicios prestados.
 
 ---
 Desarrollado para la asignatura de Desarrollo Web y Móvil.

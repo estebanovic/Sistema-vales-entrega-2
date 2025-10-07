@@ -88,7 +88,7 @@ function ImprimirVales() {
     return (
         <div className="px-6 py-12">
             <div className="w-4xl mx-auto">
-                <h1 className='text-3xl font-bold text-brand-blue-700 mb-4'>Generar vale de alimentación</h1>
+                <h1 className='text-3xl font-bold text-brand-blue-700 mb-4'>Generar Vale de Alimentación</h1>
                 <div className="bg-white shadow-xl rounded-lg w-full p-6">
                     <h2 className='text-xl font-semibold text-brand-blue-700 mb-2'>Información del turno</h2>
                     <p><strong>Hora actual:</strong> {currentTime}</p>
