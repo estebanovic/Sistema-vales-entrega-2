@@ -195,28 +195,28 @@ export default function DefinirServicios() {
                 </div>
                 <h3 className='text-xl font-semibold text-brand-blue-700 mb-2 mt-6'>Servicios</h3>
 
-                <table className="min-w-full table-auto">
+                <table className="min-w-full table-fixed">
                     <thead>
                         <tr className="bg-brand-blue-500 text-white">
-                            <th className="px-4 py-2">ID</th>
-                            <th className="px-4 py-2">Nombre</th>
-                            <th className="px-4 py-2">Precio</th>
-                            <th className="px-4 py-2">Rango horario</th>
-                            <th className="px-4 py-2">Sede</th>
-                            <th className="px-4 py-2">Cantidad por turno</th>
+                            <th className="px-4 py-2 border border-gray-300">ID</th>
+                            <th className="px-4 py-2 border border-gray-300">Nombre</th>
+                            <th className="px-4 py-2 border border-gray-300">Precio</th>
+                            <th className="px-4 py-2 border border-gray-300">Rango horario</th>
+                            <th className="px-4 py-2 border border-gray-300">Sede</th>
+                            <th className="px-4 py-2 border border-gray-300">Cantidad por turno</th>
                             <th className="px-4 py-2">Comentario</th>
                         </tr>
                     </thead>
                     <tbody>
                         {serviciosCreados.map(servicio => (
-                            <tr key={servicio.id} className="border-b hover:bg-gray-100">
-                                <td className="px-4 py-2 text-center">{servicio.id}</td>
-                                <td className="px-4 py-2 text-center">{servicio.nombre}</td>
-                                <td className="px-4 py-2 text-center">${servicio.precio}</td>
-                                <td className="px-4 py-2 text-center">{servicio.horaInicio} - {servicio.horaFin}</td>
-                                <td className="px-4 py-2 text-center">{servicio.sede}</td>
-                                <td className="px-4 py-2 text-center">{servicio.cantidad}</td>
-                                <td className="px-4 py-2 text-center">{servicio.comentario  || 'N/A'}</td>
+                            <tr key={servicio.id} className="hover:bg-gray-100">
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.id}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.nombre}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">${servicio.precio}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.horaInicio} - {servicio.horaFin}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.sede}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.cantidad}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.comentario  || 'N/A'}</td>
                             </tr>
                         ))}
                     </tbody>

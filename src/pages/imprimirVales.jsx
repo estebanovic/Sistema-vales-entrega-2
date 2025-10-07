@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ImprimirVales() {
+export default function ImprimirVales() {
     const [valesGenerados, setValesGenerados] = useState([]);
     const [tipoUsuario, setTipoUsuario] = useState('');
     const [cantidad, setCantidad] = useState('');
@@ -192,25 +192,25 @@ function ImprimirVales() {
 
                 <table className="min-w-full table-auto">
                     <thead>
-                        <tr className="bg-brand-blue-500 text-white">
-                            <th className="px-4 py-2">ID Vale</th>
-                            <th className="px-4 py-2">Tipo Usuario</th>
-                            <th className="px-4 py-2">Cantidad</th>
-                            <th className="px-4 py-2">Servicio</th>
-                            <th className="px-4 py-2">Hora Emisión</th>
-                            <th className="px-4 py-2">Observaciones</th>
+                        <tr className="bg-brand-blue-500 text-white ">
+                            <th className="px-4 py-2 border border-gray-300">ID Vale</th>
+                            <th className="px-4 py-2 border border-gray-300">Tipo Usuario</th>
+                            <th className="px-4 py-2 border border-gray-300">Cantidad</th>
+                            <th className="px-4 py-2 border border-gray-300">Servicio</th>
+                            <th className="px-4 py-2 border border-gray-300">Hora Emisión</th>
+                            <th className="px-4 py-2 border border-gray-300">Observaciones</th>
                             <th className="px-4 py-2">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {valesGenerados.map((vale) => (
-                            <tr key={vale.id} className="border-b hover:bg-gray-100">
-                                <td className="px-4 py-2 text-center">{vale.id}</td>
-                                <td className="px-4 py-2 text-center">{vale.tipoUsuario}</td>
-                                <td className="px-4 py-2 text-center">{vale.cantidad}</td>
-                                <td className="px-4 py-2 text-center">{vale.servicioAlimentacion}</td>
-                                <td className="px-4 py-2 text-center">{vale.horaEmision}</td>
-                                <td className="px-4 py-2 text-center">{vale.observaciones || 'N/A'}</td>
+                            <tr key={vale.id} className="hover:bg-gray-100">
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.id}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.tipoUsuario}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.cantidad}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.servicioAlimentacion}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.horaEmision}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.observaciones || 'N/A'}</td>
                                 <td className="px-4 py-2 text-center">
                                     <button className="text-brand-blue-500 hover:underline hover:cursor-pointer" onClick={() => imprimirVale(vale)}>Imprimir</button>
                                 </td>
@@ -223,4 +223,3 @@ function ImprimirVales() {
         </div>
     );
 }
-export default ImprimirVales;
