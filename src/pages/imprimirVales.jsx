@@ -199,7 +199,7 @@ export default function ImprimirVales() {
                             <th className="px-4 py-2 border border-gray-300">Servicio</th>
                             <th className="px-4 py-2 border border-gray-300">Hora Emisión</th>
                             <th className="px-4 py-2 border border-gray-300">Observaciones</th>
-                            <th className="px-4 py-2">Acciones</th>
+                            <th className="px-4 py-2 border border-gray-300">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -211,7 +211,7 @@ export default function ImprimirVales() {
                                 <td className="px-4 py-2 text-center border border-gray-300">{vale.servicioAlimentacion}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{vale.horaEmision}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{vale.observaciones || 'N/A'}</td>
-                                <td className="px-4 py-2 text-center">
+                                <td className="px-4 py-2 text-center border border-gray-300">
                                     <button className="text-brand-blue-500 hover:underline hover:cursor-pointer" onClick={() => imprimirVale(vale)}>Imprimir</button>
                                 </td>
                             </tr>
