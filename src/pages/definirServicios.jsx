@@ -1,93 +1,121 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { serviciosAPI, sedesAPI } from '../services/api';
 
 export default function DefinirServicios() {
-    const [serviciosCreados, setServiciosCreados] = useState([{
-        id: 1,
-        nombre: 'Desayuno',
-        precio: 3000,
-        horaInicio: '06:00',
-        horaFin: '10:00',
-        sede: 'Sede Central',
-        cantidad: 100,
-        comentario: 'Servicio de desayuno para empleados'
-    },
-    {
-        id: 2,
-        nombre: 'Almuerzo',
-        precio: 5000,
-        horaInicio: '12:00',
-        horaFin: '14:00',
-        sede: 'Sucursal 1',
-        cantidad: 150,
-        comentario: 'Servicio de almuerzo para empleados'
-    }, {
-        id: 3,
-        nombre: 'Once',
-        precio: 4000,
-        horaInicio: '16:00',
-        horaFin: '18:00',
-        sede: 'Sucursal 2',
-        cantidad: 100,
-        comentario: 'Servicio de once para empleados'
-    }, {
-        id: 4,
-        nombre: 'Cena',
-        precio: 6000,
-        horaInicio: '19:00',
-        horaFin: '21:00',
-        sede: 'Todas',
-        cantidad: 200,
-        comentario: 'Servicio de cena para empleados'
-    }]);
+    const [serviciosCreados, setServiciosCreados] = useState([]);
+    const [sedes, setSedes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
+    // Estados del formulario
     const [nombre, setNombre] = useState('');
     const [precio, setPrecio] = useState('');
     const [horaInicio, setHoraInicio] = useState('');
     const [horaFin, setHoraFin] = useState('');
     const [sede, setSede] = useState('');
     const [cantidad, setCantidad] = useState('');
+    const [estado, setEstado] = useState('activo');
     const [comentario, setComentario] = useState('');
 
-    const generateServicio = (nombre, precio, horaInicio, horaFin, sede, cantidad, comentario) => {
-        const nuevoServicio = {
-            id: serviciosCreados.length + 1,
-            nombre: nombre,
-            precio: precio,
-            horaInicio: horaInicio,
-            horaFin: horaFin,
-            sede: sede,
-            cantidad: cantidad,
-            comentario
-        };
-        setServiciosCreados([...serviciosCreados, nuevoServicio]);
+    // Cargar servicios y sedes al montar el componente
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            const [serviciosData, sedesData] = await Promise.all([
+                serviciosAPI.getAll(),
+                sedesAPI.getAll()
+            ]);
+            setServiciosCreados(serviciosData);
+            setSedes(sedesData);
+        } catch (err) {
+            setError('Error al cargar los datos: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!nombre || !precio || !horaInicio || !horaFin || !sede || !cantidad) {
+            setError('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setSuccessMessage('');
+
+        try {
+            const nuevoServicio = {
+                nombre,
+                precio: parseFloat(precio),
+                horaInicio,
+                horaFin,
+                sede,
+                cantidad: parseInt(cantidad),
+                estado,
+                comentario
+            };
+
+            const servicioCreado = await serviciosAPI.create(nuevoServicio);
+
+            setServiciosCreados([...serviciosCreados, servicioCreado]);
+            setSuccessMessage('Servicio creado exitosamente');
+
+            // Limpiar formulario
+            setNombre('');
+            setPrecio('');
+            setHoraInicio('');
+            setHoraFin('');
+            setSede('');
+            setCantidad('');
+            setEstado('activo');
+            setComentario('');
+
+            // Ocultar mensaje después de 3 segundos
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (err) {
+            setError('Error al crear el servicio: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading && serviciosCreados.length === 0) {
+        return (
+            <div className="px-6 py-12">
+                <div className="flex justify-center items-center">
+                    <div className="text-xl">Cargando...</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="px-6 py-12">
             <div className="w-4xl mx-auto">
                 <h1 className='text-3xl font-bold text-brand-blue-700 mb-4'>Definir Servicios</h1>
+
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {error}
+                    </div>
+                )}
+
+                {successMessage && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {successMessage}
+                    </div>
+                )}
+
                 <div className="bg-white shadow-xl rounded-lg w-full p-6">
-                    <form className="space-y-4" onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!nombre || !precio || !horaInicio || !horaFin || !sede || !cantidad) {
-                            return;
-                        }
-                        generateServicio(
-                            nombre,
-                            precio,
-                            horaInicio,
-                            horaFin,
-                            sede,
-                            cantidad,
-                            comentario
-                        );
-                        setNombre('');
-                        setPrecio('');
-                        setHoraInicio('');
-                        setHoraFin('');
-                        setSede('');
-                        setCantidad('');
-                        setComentario('');
-                    }}>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Servicio</label>
@@ -97,6 +125,7 @@ export default function DefinirServicios() {
                                     value={nombre}
                                     onChange={e => setNombre(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 />
                             </div>
                             <div>
@@ -107,6 +136,7 @@ export default function DefinirServicios() {
                                     value={precio}
                                     onChange={e => setPrecio(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 />
                             </div>
                         </div>
@@ -119,6 +149,7 @@ export default function DefinirServicios() {
                                     value={horaInicio}
                                     onChange={e => setHoraInicio(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 />
                             </div>
                             <div>
@@ -129,6 +160,7 @@ export default function DefinirServicios() {
                                     value={horaFin}
                                     onChange={e => setHoraFin(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 />
                             </div>
                         </div>
@@ -141,12 +173,14 @@ export default function DefinirServicios() {
                                     value={sede}
                                     onChange={e => setSede(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 >
                                     <option value="">Seleccione sede</option>
-                                    <option value="Central">Central</option>
-                                    <option value="Sucursal 1">Sucursal 1</option>
-                                    <option value="Sucursal 2">Sucursal 2</option>
-                                    <option value="Todas">Todas</option>
+                                    {sedes.map(s => (
+                                        <option key={s._id} value={s._id}>
+                                            {s.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div>
@@ -158,15 +192,23 @@ export default function DefinirServicios() {
                                     value={cantidad}
                                     onChange={e => setCantidad(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <label htmlFor="estado">Estado</label>
-                                <select name="estado" id="estado" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500">
-                                    <option value="">Activo</option>
-                                    <option value="">Inactivo</option>
+                                <select
+                                    name="estado"
+                                    id="estado"
+                                    value={estado}
+                                    onChange={e => setEstado(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
+                                >
+                                    <option value="activo">Activo</option>
+                                    <option value="inactivo">Inactivo</option>
                                 </select>
                             </div>
                         </div>
@@ -179,16 +221,20 @@ export default function DefinirServicios() {
                                     value={comentario}
                                     onChange={e => setComentario(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 ></textarea>
                             </div>
                         </div>
                         <div className="flex justify-end">
                             <button
                                 type="submit"
-                                disabled={!nombre || !precio || !horaInicio || !horaFin || !sede || !cantidad}
-                                className={`bg-brand-blue-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 ${(!nombre || !precio || !horaInicio || !horaFin || !sede || !cantidad) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-blue-700'}`}
+                                disabled={loading || !nombre || !precio || !horaInicio || !horaFin || !sede || !cantidad}
+                                className={`bg-brand-blue-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 ${(loading || !nombre || !precio || !horaInicio || !horaFin || !sede || !cantidad)
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'hover:bg-brand-blue-700'
+                                    }`}
                             >
-                                Guardar Servicio
+                                {loading ? 'Guardando...' : 'Guardar Servicio'}
                             </button>
                         </div>
                     </form>
@@ -210,13 +256,16 @@ export default function DefinirServicios() {
                     <tbody>
                         {serviciosCreados.map(servicio => (
                             <tr key={servicio.id} className="hover:bg-gray-100">
-                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.id}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.idSeq}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{servicio.nombre}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">${servicio.precio}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{servicio.horaInicio} - {servicio.horaFin}</td>
-                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.sede}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">
+                                    {sedes.find(s => s.id === servicio.sedeId)?.nombre || servicio.sede || 'N/A'}
+                                </td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{servicio.cantidad}</td>
-                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.comentario  || 'N/A'}</td>
+
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.comentario || 'N/A'}</td>
                             </tr>
                         ))}
                     </tbody>
