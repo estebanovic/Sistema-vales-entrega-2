@@ -84,7 +84,7 @@ export default function ImprimirVales() {
                 tipoUsuario: tipoUsuario,
                 valor: servicioObj?.precio || 0,
                 cantidad: parseInt(cantidad, 10),
-                observaciones: observaciones || ''
+                observacion: observaciones || ''
             };
 
             const valeCreado = await valesAPI.create(nuevoVale);
@@ -140,7 +140,7 @@ export default function ImprimirVales() {
                         <p><strong>Servicio:</strong> ${vale.servicio}</p>
                         <p><strong>Cantidad:</strong> ${vale.cantidad} vale(s)</p>
                         <p><strong>Valor:</strong> $${vale.valor}</p>
-                        ${vale.observaciones ? `<p><strong>Observaciones:</strong> ${vale.observaciones}</p>` : ''}
+                        ${vale.observacion ? `<p><strong>Observaciones:</strong> ${vale.observacion}</p>` : ''}
                     </div>
                 </div>
                 <div class="vale-footer">
@@ -305,7 +305,7 @@ export default function ImprimirVales() {
                                         minute: '2-digit' 
                                     })}
                                 </td>
-                                <td className="px-4 py-2 text-center border border-gray-300">{vale.observaciones || 'N/A'}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.observacion || 'N/A'}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">
                                     <button 
                                         className="text-brand-blue-500 hover:underline hover:cursor-pointer" 

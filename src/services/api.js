@@ -149,6 +149,16 @@ export const valesAPI = {
     });
     return handleResponse(response);
   },
+
+   getByDateRangeAndService: async (startDate, endDate, servicioId) => {
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (servicioId) params.append('servicio', servicioId);
+    
+    const response = await fetchWithAuth(`${API_URL}/vales/filter?${params.toString()}`);
+    return handleResponse(response);
+  },
 };
 
 // TICKETS
