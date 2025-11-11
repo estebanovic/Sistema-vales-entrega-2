@@ -53,7 +53,7 @@ export default function DefinirServicios() {
 
         try {
             const nuevoServicio = {
-                nombre,
+                name: nombre,
                 precio: parseFloat(precio),
                 horaInicio,
                 horaFin,
@@ -257,7 +257,7 @@ export default function DefinirServicios() {
                         {serviciosCreados.map(servicio => (
                             <tr key={servicio.id} className="hover:bg-gray-100">
                                 <td className="px-4 py-2 text-center border border-gray-300">{servicio.idSeq}</td>
-                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.nombre}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{servicio.name}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">${servicio.precio}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{servicio.horaInicio} - {servicio.horaFin}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">

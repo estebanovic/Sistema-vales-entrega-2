@@ -142,4 +142,11 @@ export const valesAPI = {
     });
     return handleResponse(response);
   },
+
+  delete: async (id) => {
+    const response = await fetchWithAuth(`${API_URL}/vales/${id}`, {
+      method: 'DELETE',
+    });
+    return handleResponse(response);
+  },
 };
