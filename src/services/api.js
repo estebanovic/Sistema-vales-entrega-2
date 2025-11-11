@@ -150,3 +150,32 @@ export const valesAPI = {
     return handleResponse(response);
   },
 };
+
+// TICKETS
+export const ticketsAPI = {
+  getAll: async () => {
+    const response = await fetchWithAuth(`${API_URL}/tickets`);
+    return handleResponse(response);
+  },
+
+  getById: async (id) => {
+    const response = await fetchWithAuth(`${API_URL}/tickets/${id}`);
+    return handleResponse(response);
+  },
+
+  create: async (ticketData) => {
+    const response = await fetchWithAuth(`${API_URL}/tickets`, {
+      method: 'POST',
+      body: JSON.stringify(ticketData),
+    });
+    return handleResponse(response);
+  },
+};
+
+//Users
+export const usersAPI = {
+  getAll: async () => {
+    const response = await fetchWithAuth(`${API_URL}/users`);
+    return handleResponse(response);
+  },
+};
