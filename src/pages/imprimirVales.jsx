@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { valesAPI, tipoUsuariosAPI, serviciosAPI } from '../services/api';
 
 export default function ImprimirVales() {
     const [valesGenerados, setValesGenerados] = useState([]);
+    const [tiposUsuario, setTiposUsuario] = useState([]);
+    const [servicios, setServicios] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    
     const [tipoUsuario, setTipoUsuario] = useState('');
     const [cantidad, setCantidad] = useState('');
     const [servicioAlimentacion, setServicioAlimentacion] = useState('');
@@ -24,16 +31,79 @@ export default function ImprimirVales() {
         }
     }, [currentTime]);
 
-    const generateVale = (tipoUsuario, cantidad, servicioAlimentacion, observaciones) => {
-        const nuevoVale = {
-            id: valesGenerados.length + 1,
-            tipoUsuario,
-            cantidad: parseInt(cantidad, 10),
-            servicioAlimentacion,
-            observaciones,
-            horaEmision: currentTime
-        };
-        setValesGenerados([...valesGenerados, nuevoVale]);
+    // Cargar datos al montar el componente
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            const [valesData, tiposData, serviciosData] = await Promise.all([
+                valesAPI.getAll(),
+                tipoUsuariosAPI.getAll(),
+                serviciosAPI.getAll()
+            ]);
+            
+            // Filtrar vales del día actual
+            const hoy = new Date().toISOString().split('T')[0];
+            const valesHoy = valesData.filter(vale => {
+                const fechaVale = new Date(vale.createdAt).toISOString().split('T')[0];
+                return fechaVale === hoy;
+            });
+            
+            setValesGenerados(valesHoy);
+            setTiposUsuario(tiposData);
+            setServicios(serviciosData);
+        } catch (err) {
+            setError('Error al cargar los datos: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const generateVale = async (e) => {
+        e.preventDefault();
+        
+        if (!tipoUsuario || !cantidad || !servicioAlimentacion) {
+            setError('Por favor complete todos los campos requeridos');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setSuccessMessage('');
+
+        try {
+            // Buscar el valor del vale según tipo de usuario y servicio
+            const tipoUsuarioObj = tiposUsuario.find(t => t._id === tipoUsuario || t.id === tipoUsuario);
+            const servicioObj = servicios.find(s => s._id === servicioAlimentacion || s.id === servicioAlimentacion);
+            
+            const nuevoVale = {
+                servicio: servicioAlimentacion,
+                tipoUsuario: tipoUsuario,
+                valor: servicioObj?.precio || 0,
+                cantidad: parseInt(cantidad, 10),
+                observaciones: observaciones || ''
+            };
+
+            const valeCreado = await valesAPI.create(nuevoVale);
+            
+            setValesGenerados([valeCreado, ...valesGenerados]);
+            setSuccessMessage(`Vale generado exitosamente (${cantidad} vale(s))`);
+            
+            // Limpiar formulario
+            setTipoUsuario('');
+            setCantidad('');
+            setServicioAlimentacion('');
+            setObservaciones('');
+            
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (err) {
+            setError('Error al generar el vale: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const imprimirVale = (vale) => {
@@ -60,15 +130,16 @@ export default function ImprimirVales() {
                 <div class="vale-ticket">
                 <div class="vale-header">
                     <h2>VALE DE ALIMENTACIÓN</h2>
-                    <p class="id-vale">ID: ${vale.id}</p>
+                    <p class="id-vale">ID: ${vale._id}</p>
                 </div>
                 <div class="vale-body">
                     <div class="vale-info">
-                        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
-                        <p><strong>Hora:</strong> ${vale.horaEmision}</p>
+                        <p><strong>Fecha:</strong> ${new Date(vale.createdAt).toLocaleDateString('es-CL')}</p>
+                        <p><strong>Hora:</strong> ${new Date(vale.createdAt).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</p>
                         <p><strong>Tipo:</strong> ${vale.tipoUsuario}</p>
                         <p><strong>Servicio:</strong> ${vale.servicio}</p>
                         <p><strong>Cantidad:</strong> ${vale.cantidad} vale(s)</p>
+                        <p><strong>Valor:</strong> $${vale.valor}</p>
                         ${vale.observaciones ? `<p><strong>Observaciones:</strong> ${vale.observaciones}</p>` : ''}
                     </div>
                 </div>
@@ -86,32 +157,39 @@ export default function ImprimirVales() {
         ventanaImpresion.close();
     };
 
+    if (loading && valesGenerados.length === 0) {
+        return (
+            <div className="px-6 py-12">
+                <div className="flex justify-center items-center">
+                    <div className="text-xl">Cargando...</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="px-6 py-12">
             <div className="w-4xl mx-auto">
                 <h1 className='text-3xl font-bold text-brand-blue-700 mb-4'>Generar Vale de Alimentación</h1>
+                
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+                        {error}
+                    </div>
+                )}
+                
+                {successMessage && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+                        {successMessage}
+                    </div>
+                )}
+
                 <div className="bg-white shadow-xl rounded-lg w-full p-6">
                     <h2 className='text-xl font-semibold text-brand-blue-700 mb-2'>Información del turno</h2>
                     <p><strong>Hora actual:</strong> {currentTime}</p>
                     <p><strong>Tipo de turno:</strong> {tipoTurno}</p>
                     <hr className="border-brand-blue-500 m-4"></hr>
-                    <form className="space-y-4" onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!tipoUsuario || !cantidad || !servicioAlimentacion) {
-                            return;
-                        }
-                        generateVale(
-                            tipoUsuario,
-                            cantidad,
-                            servicioAlimentacion,
-                            observaciones
-                        );
-                        // Opcional: limpiar campos después de generar
-                        setTipoUsuario('');
-                        setCantidad('');
-                        setServicioAlimentacion('');
-                        setObservaciones('');
-                    }}>
+                    <form className="space-y-4" onSubmit={generateVale}>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="tipoUsuario" className="block text-sm font-medium text-brand-blue-700 mb-1">
@@ -123,13 +201,14 @@ export default function ImprimirVales() {
                                     value={tipoUsuario}
                                     onChange={e => setTipoUsuario(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 >
                                     <option value="">Seleccione</option>
-                                    <option value="obrero">Obrero</option>
-                                    <option value="administrativo">Administrativo</option>
-                                    <option value="jefe">Jefe</option>
-                                    <option value="gerente">Gerente</option>
-                                    <option value="visita">Visita</option>
+                                    {tiposUsuario.map(tipo => (
+                                        <option key={tipo._id || tipo.id} value={tipo._id || tipo.id}>
+                                            {tipo.name || tipo.nombre}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div>
@@ -144,6 +223,7 @@ export default function ImprimirVales() {
                                     value={cantidad}
                                     onChange={e => setCantidad(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 />
                             </div>
                         </div>
@@ -156,12 +236,14 @@ export default function ImprimirVales() {
                                     value={servicioAlimentacion}
                                     onChange={e => setServicioAlimentacion(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 >
                                     <option value="">Seleccione</option>
-                                    <option value="desayuno">Desayuno</option>
-                                    <option value="almuerzo">Almuerzo</option>
-                                    <option value="once">Once</option>
-                                    <option value="cena">Cena</option>
+                                    {servicios.map(servicio => (
+                                        <option key={servicio._id || servicio.id} value={servicio._id || servicio.id}>
+                                            {servicio.name || servicio.nombre}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -175,16 +257,21 @@ export default function ImprimirVales() {
                                     value={observaciones}
                                     onChange={e => setObservaciones(e.target.value)}
                                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-blue-500"
+                                    disabled={loading}
                                 ></textarea>
                             </div>
                         </div>
                         <div className="flex justify-end">
                             <button
                                 type="submit"
-                                disabled={!tipoUsuario || !cantidad || !servicioAlimentacion}
-                                className={`bg-brand-blue-500 text-white px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 ${(!tipoUsuario || !cantidad || !servicioAlimentacion) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-blue-600'}`}
+                                disabled={loading || !tipoUsuario || !cantidad || !servicioAlimentacion}
+                                className={`bg-brand-blue-500 text-white px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 ${
+                                    (loading || !tipoUsuario || !cantidad || !servicioAlimentacion) 
+                                    ? 'opacity-50 cursor-not-allowed' 
+                                    : 'hover:bg-brand-blue-600'
+                                }`}
                             >
-                                Generar Vale
+                                {loading ? 'Generando...' : 'Generar Vale'}
                             </button>
                         </div>
                     </form>
@@ -196,8 +283,9 @@ export default function ImprimirVales() {
                         <tr className="bg-brand-blue-500 text-white ">
                             <th className="px-4 py-2 border border-gray-300">ID Vale</th>
                             <th className="px-4 py-2 border border-gray-300">Tipo Usuario</th>
-                            <th className="px-4 py-2 border border-gray-300">Cantidad</th>
                             <th className="px-4 py-2 border border-gray-300">Servicio</th>
+                            <th className="px-4 py-2 border border-gray-300">Cantidad</th>
+                            <th className="px-4 py-2 border border-gray-300">Valor</th>
                             <th className="px-4 py-2 border border-gray-300">Hora Emisión</th>
                             <th className="px-4 py-2 border border-gray-300">Observaciones</th>
                             <th className="px-4 py-2 border border-gray-300">Acciones</th>
@@ -205,15 +293,26 @@ export default function ImprimirVales() {
                     </thead>
                     <tbody>
                         {valesGenerados.map((vale) => (
-                            <tr key={vale.id} className="hover:bg-gray-100">
-                                <td className="px-4 py-2 text-center border border-gray-300">{vale.id}</td>
+                            <tr key={vale._id} className="hover:bg-gray-100">
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.idSeq}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{vale.tipoUsuario}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">{vale.servicio}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{vale.cantidad}</td>
-                                <td className="px-4 py-2 text-center border border-gray-300">{vale.servicioAlimentacion}</td>
-                                <td className="px-4 py-2 text-center border border-gray-300">{vale.horaEmision}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">${vale.valor}</td>
+                                <td className="px-4 py-2 text-center border border-gray-300">
+                                    {new Date(vale.createdAt).toLocaleTimeString('es-CL', { 
+                                        hour: '2-digit', 
+                                        minute: '2-digit' 
+                                    })}
+                                </td>
                                 <td className="px-4 py-2 text-center border border-gray-300">{vale.observaciones || 'N/A'}</td>
                                 <td className="px-4 py-2 text-center border border-gray-300">
-                                    <button className="text-brand-blue-500 hover:underline hover:cursor-pointer" onClick={() => imprimirVale(vale)}>Imprimir</button>
+                                    <button 
+                                        className="text-brand-blue-500 hover:underline hover:cursor-pointer" 
+                                        onClick={() => imprimirVale(vale)}
+                                    >
+                                        Imprimir
+                                    </button>
                                 </td>
                             </tr>
                         ))}
