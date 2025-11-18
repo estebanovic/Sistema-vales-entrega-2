@@ -10,6 +10,7 @@ export default function DefinirVales() {
     const [successMessage, setSuccessMessage] = useState('');
     
     // Estados del formulario
+    const [editingId, setEditingId] = useState(null);
     const [tipoUsuario, setTipoUsuario] = useState('');
     const [servicioAlimentacion, setServicioAlimentacion] = useState('');
     const [valorVale, setValorVale] = useState('');
@@ -51,17 +52,27 @@ export default function DefinirVales() {
         setSuccessMessage('');
 
         try {
-            const nuevoVale = {
+            const valeData = {
                 servicio: servicioAlimentacion,
                 tipoUsuario: tipoUsuario,
                 valor: parseFloat(valorVale),
                 cantidad: parseInt(cantidadVales)
             };
 
-            const valeCreado = await valesAPI.create(nuevoVale);
-            
-            setValesDefinidos([...valesDefinidos, valeCreado]);
-            setSuccessMessage('Vale definido exitosamente');
+            if (editingId) {
+                // Actualizar vale existente
+                const valeActualizado = await valesAPI.update(editingId, valeData);
+                setValesDefinidos(valesDefinidos.map(vale => 
+                    vale._id === editingId ? valeActualizado : vale
+                ));
+                setSuccessMessage('Vale actualizado exitosamente');
+                setEditingId(null);
+            } else {
+                // Crear nuevo vale
+                const valeCreado = await valesAPI.create(valeData);
+                setValesDefinidos([...valesDefinidos, valeCreado]);
+                setSuccessMessage('Vale definido exitosamente');
+            }
             
             // Limpiar formulario
             setTipoUsuario('');
@@ -71,10 +82,36 @@ export default function DefinirVales() {
             
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (err) {
-            setError('Error al definir el vale: ' + err.message);
+            setError('Error al ' + (editingId ? 'actualizar' : 'definir') + ' el vale: ' + err.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const editVale = (vale) => {
+        setEditingId(vale._id);
+        
+        // Buscar los IDs correspondientes a los nombres
+        const tipoUsuarioObj = tiposUsuario.find(tipo => 
+            (tipo.name || tipo.nombre) === vale.tipoUsuario
+        );
+        const servicioObj = servicios.find(servicio => 
+            (servicio.name || servicio.nombre) === vale.servicio
+        );
+        
+        setTipoUsuario(tipoUsuarioObj ? (tipoUsuarioObj._id || tipoUsuarioObj.id) : '');
+        setServicioAlimentacion(servicioObj ? (servicioObj._id || servicioObj.id) : '');
+        setValorVale(vale.valor.toString());
+        setCantidadVales(vale.cantidad.toString());
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setTipoUsuario('');
+        setServicioAlimentacion('');
+        setValorVale('');
+        setCantidadVales('');
     };
 
     const deleteVale = async (id) => {
@@ -121,6 +158,18 @@ export default function DefinirVales() {
                 )}
 
                 <div className="bg-white shadow-xl rounded-lg w-full p-6">
+                    {editingId && (
+                        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mb-4 flex justify-between items-center">
+                            <span>Editando vale</span>
+                            <button 
+                                type="button"
+                                onClick={cancelEdit}
+                                className="text-blue-700 hover:text-blue-900 font-semibold"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    )}
                     <form className="space-y-4" onSubmit={defineVale}>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -182,7 +231,16 @@ export default function DefinirVales() {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-2">
+                            {editingId && (
+                                <button
+                                    type="button"
+                                    onClick={cancelEdit}
+                                    className="bg-gray-500 text-white px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 hover:bg-gray-600"
+                                >
+                                    Cancelar
+                                </button>
+                            )}
                             <button
                                 type="submit"
                                 className={`bg-brand-blue-500 text-white px-6 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500  ${
@@ -192,7 +250,7 @@ export default function DefinirVales() {
                                 }`}
                                 disabled={loading || !tipoUsuario || !servicioAlimentacion || !valorVale || !cantidadVales}
                             >
-                                {loading ? 'Definiendo...' : 'Definir Vale'}
+                                {loading ? (editingId ? 'Actualizando...' : 'Definiendo...') : (editingId ? 'Actualizar Vale' : 'Definir Vale')}
                             </button>
                         </div>
                     </form>
@@ -223,7 +281,12 @@ export default function DefinirVales() {
                                     {new Date(vale.createdAt).toLocaleDateString('es-CL')}
                                 </td>
                                 <td className="px-4 py-2 border border-gray-300">
-                                    
+                                    <button 
+                                        className="text-blue-500 hover:underline hover:cursor-pointer mx-2" 
+                                        onClick={() => editVale(vale)}
+                                    >
+                                        Editar
+                                    </button>
                                     <button 
                                         className="text-red-500 hover:underline hover:cursor-pointer" 
                                         onClick={() => deleteVale(vale._id)}

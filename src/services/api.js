@@ -143,6 +143,14 @@ export const valesAPI = {
     return handleResponse(response);
   },
 
+  update: async (id, valeData) => {
+    const response = await fetchWithAuth(`${API_URL}/vales/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(valeData),
+    });
+    return handleResponse(response);
+  },
+
   delete: async (id) => {
     const response = await fetchWithAuth(`${API_URL}/vales/${id}`, {
       method: 'DELETE',
